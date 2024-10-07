@@ -1,5 +1,7 @@
 using MaterialSkin;
 using MaterialSkin.Controls;
+using System.Globalization;
+using System.Windows.Forms;
 
 namespace HexCalculator
 {
@@ -13,58 +15,45 @@ namespace HexCalculator
             materialSkinManager.AddFormToManage(this);
             materialSkinManager.Theme = MaterialSkinManager.Themes.LIGHT;
             materialSkinManager.ColorScheme = new ColorScheme(Primary.BlueGrey800, Primary.BlueGrey900, Primary.BlueGrey500, Accent.LightBlue200, TextShade.WHITE);
+            checkedListBox1.ItemCheck += checkedListBox1_ItemCheck;
         }
 
-        private void InputHexValue1TextBox_TextChanged(object sender, EventArgs e)
+        private void checkedListBox1_ItemCheck(object? sender, ItemCheckEventArgs e)
         {
-
-        }
-
-        private void InputHexValue2TextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void CalculateHexButton_Click(object sender, EventArgs e)
-        {
-            try
+            if (sender is CheckedListBox checkedListBox)
             {
-                // Retrieve values from input textboxes
-                string hex1 = InputHexValue1TextBox.Text.Trim();
-                string hex2 = InputHexValue2TextBox.Text.Trim();
-                string operation = OperationComboBox.Text.Trim();
+                int newTotalHexValue = 0;
 
-                // Convert hex strings to integers
-                int value1 = Convert.ToInt32(hex1, 16);
-                int value2 = Convert.ToInt32(hex2, 16);
-
-                int result = 0;
-
-                // Perform the selected operation
-                if (operation == "+")
+                for (int i = 0; i < checkedListBox.Items.Count; i++)
                 {
-                    result = value1 + value2;
-                }
-                else if (operation == "-")
-                {
-                    result = value1 - value2;
-                }
-                else
-                {
-                    MessageBox.Show("Invalid operation selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    string? itemText = checkedListBox.Items[i]?.ToString() ?? string.Empty;
+                    string hexValueString = itemText.Split(' ')[0];
+
+                    if (hexValueString.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                    {
+                        hexValueString = hexValueString.Substring(2);
+                    }
+
+                    int hexValue = int.Parse(hexValueString, NumberStyles.HexNumber);
+
+
+                    if (i == e.Index)
+                    {
+                        if (e.NewValue == CheckState.Checked)
+                        {
+                            newTotalHexValue += hexValue;
+                        }
+                    }
+                    else
+                    {
+                        if (checkedListBox.GetItemChecked(i))
+                        {
+                            newTotalHexValue += hexValue;
+                        }
+                    }
                 }
 
-                // Determine the maximum length for formatting the result
-                int maxLength = Math.Max(hex1.Length - 2, hex2.Length - 2); // Subtract 2 to exclude the "0x" prefix
-
-                // Format the result as a hex string and display it in the output textbox
-                OutputHexTextBox.Text = "0x" + result.ToString($"X{maxLength}");
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show("Invalid hex value entered.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                OutputHexTextBox.Text = $"0x{newTotalHexValue:X8}";
             }
         }
     }
