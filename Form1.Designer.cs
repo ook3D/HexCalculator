@@ -59,6 +59,7 @@
             checkedListBox1.Size = new Size(340, 562);
             checkedListBox1.TabIndex = 6;
             checkedListBox1.ItemCheck += checkedListBox1_ItemCheck;
+            checkedListBox1.MouseDown += checkedListBox1_MouseDown;
             // 
             // Form1
             // 

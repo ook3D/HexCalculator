@@ -56,5 +56,17 @@ namespace HexCalculator
                 OutputHexTextBox.Text = $"0x{newTotalHexValue:X8}";
             }
         }
+        private void checkedListBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            int index = checkedListBox1.IndexFromPoint(e.Location);
+            if (index != ListBox.NoMatches)
+            {
+                if (e.X > 16)
+                {
+                    bool isChecked = checkedListBox1.GetItemChecked(index);
+                    checkedListBox1.SetItemChecked(index, !isChecked);
+                }
+            }
+        }
     }
 }
